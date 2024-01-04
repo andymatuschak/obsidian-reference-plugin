@@ -148,25 +148,21 @@ export default class ReferencePlugin extends Plugin {
 				const element = editor.getDoc().cm.contentDOM;
 				const lines = element.querySelectorAll(".cm-line");
 				const currentLine = lines[cursor.line];
-				const spans = currentLine.querySelectorAll(".reference-span");
-				const spanStates = Array.from(spans).map(
-					(span: HTMLSpanElement) => span.style.display
-				);
+				const spans = Array.from<HTMLSpanElement>(currentLine.querySelectorAll(".reference-span"));
 
 				if (
-					spanStates.every((state) => state === "inline") ||
-					spanStates.every((state) => state === "")
+					spans.every((span) => span.classList.contains(
+						"reference-span-hidden"))
 				) {
-					spans.forEach((span: HTMLSpanElement) => {
-						span.style.display = "none";
-					});
-					new Notice("Toggle annotations off");
-				} else {
-					spans.forEach((span: HTMLSpanElement) => {
-						if (span.style.display === "" || span.style.display === "none")
-							span.style.display = "inline";
+					spans.forEach((span) => {
+						span.classList.toggle("reference-span-hidden", false)
 					});
 					new Notice("Toggle annotations on");
+				} else {
+					spans.forEach((span) => {
+						span.classList.toggle("reference-span-hidden", true)
+					});
+					new Notice("Toggle annotations off");
 				}
 
 				// Find the element at line
